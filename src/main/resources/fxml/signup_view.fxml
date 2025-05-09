@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.ballsort.controller.SignUpController"
+            stylesheets="@../css/style.css"
+            prefHeight="400.0" prefWidth="600.0"
+            fx:id="borderSignUp"
+                id="borderSignUp">
+
+    <center>
+        <GridPane alignment="CENTER" fx:id="gridPane" id="gridPane" vgap="10">
+            <TextField fx:id="userName" id="userName" promptText="Enter your name"
+                       GridPane.rowIndex="0" GridPane.columnIndex="0"
+            />
+            <TextField fx:id="userEmail" id="userEmail" promptText="Enter your email"
+                       GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <PasswordField fx:id="userPassword" id="userPassword" prefWidth="100"
+                       GridPane.rowIndex="2" GridPane.columnIndex="0"
+            />
+            <VBox alignment="CENTER" spacing="20"  GridPane.rowIndex="4"
+            >
+                <Button fx:id="signButton" text="Sign up" id="signButton"
+                        GridPane.rowIndex="3"
+                        onAction="#signInAction"/>
+                <Button fx:id="loginButton" text="Login" id="loginButton"
+                        GridPane.rowIndex="3"
+                        onAction="#toLogin"/>
+            </VBox>
+        </GridPane>
+    </center>
+</BorderPane>

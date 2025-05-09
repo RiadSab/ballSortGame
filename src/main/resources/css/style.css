@@ -1,0 +1,101 @@
+#pane{
+    -fx-background-image: url("../images/backgrounds/purple.jpg");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    /*-fx-background-color: blue;*/
+    /*-fx-border-color: red;*/
+}
+
+#vbox{
+    -fx-border-radius: 0 0 50 50;
+    -fx-background-radius: 0 0 50 50;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+    -fx-background-color: rgba(255, 196, 0, 0.5);
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(255, 196, 0, 0.7),  10, 0.5, 0, 4);
+}
+
+
+
+.button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-effect: null;
+}
+
+#startButton{
+    -fx-text-fill: white;
+    -fx-background-color: rgb(255, 226, 75);
+    -fx-pref-height: 50;
+    -fx-border-radius: 10;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-border-color: rgba(255, 196, 0,1);
+    -fx-background-radius: 10;
+    -fx-pref-width: 100px;
+    -fx-translate-y: -20;
+    -fx-translate-x: 50%;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(255, 196, 0, 0.5),  20, 0.5, 4, 4);
+}
+
+/*#startButton:hover{*/
+/*    -fx-scale-x: 1.2;*/
+/*    -fx-scale-y: 1.2;*/
+
+
+/*}*/
+
+#statusText{
+    -fx-text-fill: white;
+    -fx-translate-y: -10;
+    -fx-translate-x: 100;
+    -fx-scale-y: 2;
+    -fx-scale-x: 2;
+    -fx-effect: dropshadow(gaussian, rgba(255, 226, 75, 0.5),  20, 0.5, 4, 4);
+    -fx-font-weight: bold;
+    /*-fx-background-color: rgb(255, 226, 75);*/
+    -fx-background-radius: 20;
+
+}
+
+#loginButton, #toSignUp, #signButton{
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-pref-width: 70px;
+    -fx-pref-height: 20px;
+    -fx-background-color: white;
+    -fx-effect: innershadow(gaussian, rgba(255, 115, 0, 0.3), 20, 0.5, 1, 1);
+}
+
+#loginButton:hover{
+    /*-fx-background-color: black;*/
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.5, 4, 4);
+}
+
+#toSignUp:hover{
+    /*-fx-background-color: black;*/
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.5, 4, 4);
+}
+
+#signButton:hover{
+    /*-fx-background-color: black;*/
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.5, 4, 4);
+}
+
+
+
+#borderLogin, #borderSignUp{
+    -fx-background-image: url("../images/backgrounds/green.jpg");
+    -fx-background-size: stretch;
+}
