@@ -25,6 +25,7 @@ import javafx.scene.transform.Transform;
 import javafx.util.Duration;
 import org.example.ballsort.model.Ball;
 import org.example.ballsort.model.GameState;
+import org.example.ballsort.model.Move;
 import org.example.ballsort.model.Tube;
 
 import javax.swing.text.html.Option;
@@ -45,6 +46,10 @@ public class GameController {
     @FXML
     private ComboBox<String> levelsChoiceBox;
     @FXML
+    private Button undoButton;
+    @FXML
+    private Button redoButton;
+    @FXML
     public void initialize() {
         level = "Level 1";
 
@@ -54,6 +59,8 @@ public class GameController {
             setGameUi(level);
         });
         hoverGrowTransition(startButton);
+        hoverGrowTransition(undoButton);
+        hoverGrowTransition(redoButton);
     }
 
     public void hoverGrowTransition(Button button) {
@@ -72,15 +79,18 @@ public class GameController {
         });
     }
 
-    public void onButtonClick(ActionEvent event) {
+    public void onButtonClick() {
+        int levelNum = (level.charAt(level.length() - 1)) - '0';
+        System.out.println("level: " + levelNum);
+        String[] color = {"orange", "blue", "red", "green"};
+        gameState = new GameState(4, levelNum, color);
         setGameUi(level);
     }
 
     public void setGameUi(String level) {
-        int levelNum = (level.charAt(level.length() - 1)) - '0';
-
-        String[] color = {"orange", "blue", "red", "green"};
-        gameState = new GameState(4, levelNum, color);
+//        int levelNum = (level.charAt(level.length() - 1)) - '0';
+//        String[] color = {"orange", "blue", "red", "green"};
+//        gameState = new GameState(4, levelNum, color);
 
         if(gameGrid == null) {
             System.out.println("GameGrid is null");
@@ -90,7 +100,7 @@ public class GameController {
         }
         gameGrid.getChildren().clear();
 
-        if(gameState != null )statusText.setText("Moves: " + String.valueOf(gameState.getMoveCounter()));
+        if(gameState != null ) statusText.setText("Moves: " + String.valueOf(gameState.getMoveCounter()));
         int i = 0;
         for(Tube tube: gameState.getTubes()){
             final int index = i;
@@ -179,6 +189,8 @@ public class GameController {
                 int destIndex = index;
                 boolean moved = gameState.moveBall(srcIndex, destIndex);
                 if(moved) {
+                    Move move = new Move(srcIndex, destIndex);
+                    gameState.getHistory().add(move);
                     System.out.println("Moved Ball");
                     setGameUi(level);
                 }
@@ -203,5 +215,27 @@ public class GameController {
             System.out.println("drag end");
             circle.setVisible(true);
         });
+    }
+
+    public void undoClicked(){
+        if(gameState != null && gameState.getHistory().size() > 0){
+            Move lastMove = gameState.getHistory().peekLast();
+            gameState.getRedoMoves().addLast(lastMove);
+            int srcIndex = gameState.getHistory().peekLast().getToIndex();
+            int toIndex = gameState.getHistory().peekLast().getFromIndex();
+
+            gameState.getTubes().get(toIndex).pushBall(gameState.getTubes().get(srcIndex).getBalls().pop());
+            gameState.getHistory().removeLast();
+            setGameUi(level);
+        }
+    }
+
+    public void redoClicked(){
+        if(gameState != null && gameState.getRedoMoves().size() > 0){
+            Move lastMove = gameState.getRedoMoves().removeLast();
+            gameState.moveBall(lastMove.getFromIndex(), lastMove.getToIndex());
+            gameState.getHistory().addLast(lastMove);
+            setGameUi(level);
+        }
     }
 }

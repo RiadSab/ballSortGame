@@ -8,12 +8,14 @@ import java.util.List;
 public class GameState {
     private List<Tube> tubes;
     private Deque<Move> history;
+    private Deque<Move> redoMoves;
     private final int maxBalls = 6;
     private final int maxTubes = 4;
     private int moveCounter = 0;
 
 
    public GameState(int maxBalls, int mTubes, String [] colors) {
+       redoMoves = new ArrayDeque<>();
        tubes = new ArrayList<>();
        history = new ArrayDeque<>();
        for(int i = 0; i < 5; i++) {
@@ -34,27 +36,30 @@ public class GameState {
            tubes.add(tube);
        }
    }
-   public boolean moveBall(int from, int to) {
+
+    public boolean moveBall(int from, int to) {
         Tube fromTube = this.getTubes().get(from);
         Tube toTube = this.getTubes().get(to);
+        if(isSolved()){
 
-        if(fromTube != null && toTube != null && fromTube != toTube) {
+            return false;
+        }
+        else if(fromTube != null && toTube != null && fromTube != toTube) {
             if(toTube.isEmpty()) {
                 moveCounter++;
                 toTube.pushBall(fromTube.popBall());
+                System.out.println("Moved " + fromTube + " to " + toTube);
                 return true;
             }
             else if(!toTube.isEmpty() && fromTube.getBalls().peek().getColor() == toTube.getBalls().peek().getColor()){
                 toTube.pushBall(fromTube.popBall());
+                System.out.println("Moved " + fromTube + " to " + toTube);
                 moveCounter++;
                 return true;
             }
         }
-       if(isSolved()) {
-
-           return false;
-       }
         return false;
+
    }
 
 
@@ -104,6 +109,11 @@ public class GameState {
     }
 
 
+    public Deque<Move> getRedoMoves() {
+        return redoMoves;
+    }
 
-
+    public void setRedoMoves(Deque<Move> redoMoves) {
+        this.redoMoves = redoMoves;
+    }
 }

@@ -29,10 +29,8 @@ public class SignUpController {
     private TextField userEmail;
     @FXML
     private GridPane gridPane;
-
     @FXML
     private Button signButton;
-
     @FXML
     private Button loginButton;
 
@@ -90,5 +88,4 @@ public class SignUpController {
             shrink.play();
         });
     }
-
 }

@@ -4,7 +4,7 @@ public class Move {
     private int fromIndex;
     private int toIndex;
 
-    Move(int fromIndex, int toIndex) {
+    public Move(int fromIndex, int toIndex) {
         this.fromIndex = fromIndex;
         this.toIndex = toIndex;
     }
