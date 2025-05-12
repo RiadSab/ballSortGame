@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainApp extends Application {
-    private static Stage window;
+    public static Stage window;
     @Override
     public void start(Stage stage) throws IOException {
         window = stage;
@@ -26,6 +26,7 @@ public class MainApp extends Application {
 
 
     public static void changeScene(String fxmlPath) throws IOException {
+
         FXMLLoader fxmlLoader1 = new FXMLLoader(MainApp.class.getResource(fxmlPath));
         Parent root = fxmlLoader1.load();
         Scene scene = new Scene(root, 700, 400);

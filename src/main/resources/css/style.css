@@ -1,4 +1,4 @@
-#pane{
+#stackPane{
     -fx-background-image: url("../images/backgrounds/purple.jpg");
     -fx-background-size: stretch;
     -fx-background-repeat: no-repeat;
@@ -111,11 +111,14 @@
     -fx-background-radius: 10;
     -fx-pref-width: 70px;
     -fx-effect: dropshadow(gaussian, rgba(0, 111, 255, 0.5),  20, 0.5, 4, 4);
-    /*-fx-margin-left: 90px;*/
-    /*-fx-margin-top: 20px;*/
 }
 
-/*#undoButton:hover{*/
-/*    -fx-background-radius: 20px;*/
-/*    -fx-border-radius: 20px;*/
-/*}*/
+#winLabel{
+    -fx-font-size: 60;
+    -fx-font-weight: bold;
+    -fx-border-color: white;
+    -fx-border-style: solid;
+    -fx-border-width: 2;
+    -fx-text-fill: gold;
+}
+

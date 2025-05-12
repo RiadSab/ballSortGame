@@ -3,25 +3,28 @@ package org.example.ballsort.controller;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.example.ballsort.MainApp;
 import org.example.ballsort.Database.DAO;
+import org.example.ballsort.model.User;
 
 
 import java.awt.*;
 import java.io.IOException;
 
+import static org.example.ballsort.MainApp.window;
+
 public class LoginController {
+
+    public Stage stage;
+    public User userLoggedIn;
     @FXML
     private TextField userName;
 
@@ -37,7 +40,14 @@ public class LoginController {
     @FXML
     private GridPane gridPane;
 
+    @FXML
+    private void initialize() {
+        hoverGrowTransition(loginButton);
+        hoverGrowTransition(toSignUp);
+    }
+
     public  void loginAction() throws IOException {
+
         String user =  userName.getText();
         String pass = userPassword.getText();
         System.out.println(user);
@@ -53,7 +63,19 @@ public class LoginController {
             alert.showAndWait();
         }
         else {
-            MainApp.changeScene("/fxml/game_view.fxml");
+            userLoggedIn = DAO.selectUser(user);
+            FXMLLoader fxmlLoader1 = new FXMLLoader(MainApp.class.getResource("/fxml/game_view.fxml"));
+            Parent root = fxmlLoader1.load();
+            GameController gameController1 = fxmlLoader1.getController();
+            gameController1.setUserLoggedIn(userLoggedIn);
+            stage = MainApp.window;
+            gameController1.setStage(stage);
+            Scene scene = new Scene(root, 700, 400);
+            scene.getStylesheets().add(MainApp.class.getResource("/css/style.css").toExternalForm());
+            MainApp.window.setTitle("Ball Sort Game!");
+            MainApp.window.setScene(scene);
+            MainApp.window.show();
+//            MainApp.changeScene("/fxml/game_view.fxml");
         }
     }
 
@@ -61,11 +83,7 @@ public class LoginController {
         MainApp.changeScene("/fxml/signup_view.fxml");
     }
 
-    @FXML
-    private void initialize() {
-        hoverGrowTransition(loginButton);
-        hoverGrowTransition(toSignUp);
-    }
+
 
 
     public void hoverGrowTransition(Button button) {
@@ -84,5 +102,51 @@ public class LoginController {
         });
     }
 
+    public User getUserLoggedIn() {
+        return userLoggedIn;
+    }
 
+    public void setUserLoggedIn(User userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
+
+    public TextField getUserName() {
+        return userName;
+    }
+
+    public void setUserName(TextField userName) {
+        this.userName = userName;
+    }
+
+    public PasswordField getUserPassword() {
+        return userPassword;
+    }
+
+    public void setUserPassword(PasswordField userPassword) {
+        this.userPassword = userPassword;
+    }
+
+    public Button getLoginButton() {
+        return loginButton;
+    }
+
+    public void setLoginButton(Button loginButton) {
+        this.loginButton = loginButton;
+    }
+
+    public Button getToSignUp() {
+        return toSignUp;
+    }
+
+    public void setToSignUp(Button toSignUp) {
+        this.toSignUp = toSignUp;
+    }
+
+    public GridPane getGridPane() {
+        return gridPane;
+    }
+
+    public void setGridPane(GridPane gridPane) {
+        this.gridPane = gridPane;
+    }
 }

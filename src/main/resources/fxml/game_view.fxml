@@ -17,49 +17,56 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
-<BorderPane fx:id="pane"
-            id="pane"
-            xmlns:fx = "http://javafx.com/fxml"
-            fx:controller="org.example.ballsort.controller.GameController"
-            stylesheets="@../css/style.css">
-    <top >
+<?import javafx.scene.layout.StackPane?>
+<StackPane
+        fx:id="stackPane"
+        id="stackPane"
+        xmlns:fx = "http://javafx.com/fxml"
+        fx:controller="org.example.ballsort.controller.GameController"
+        stylesheets="@../css/style.css">
+    <BorderPane fx:id="borderPane"
+                id="borderPane"
+                >
+        <top >
 
-        <HBox spacing="10">
-            <padding>
-                <Insets top="20" left="20"/>
-            </padding>
-            <Button fx:id="undoButton" id="undoButton" text="Undo" onAction="#undoClicked"/>
-            <Button fx:id="redoButton" id="redoButton" text="Redo" onAction="#redoClicked"/>
-        </HBox>
+            <HBox spacing="10">
+                <padding>
+                    <Insets top="20" left="20"/>
+                </padding>
+                <Button fx:id="undoButton" id="undoButton" text="Undo" onAction="#undoClicked"/>
+                <Button fx:id="redoButton" id="redoButton" text="Redo" onAction="#redoClicked"/>
+            </HBox>
 
-    </top>
-    <center>
-        <GridPane fx:id="gameGrid" hgap="10" vgap = "10" alignment="CENTER">
-            <padding>
-                <Insets top = "20" bottom = "20" left = "20" right = "20"/>
-            </padding>
-        </GridPane>
+        </top>
+        <center>
+            <GridPane fx:id="gameGrid" hgap="10" vgap = "10" alignment="CENTER">
+                <padding>
+                    <Insets top = "20" bottom = "20" left = "20" right = "20"/>
+                </padding>
+            </GridPane>
 
-    </center>
-    <bottom>
-        <HBox alignment="CENTER" spacing="40" >
-<!--            <padding>-->
-<!--                <Insets left="70"/>-->
-<!--            </padding>-->
-            <ComboBox id="levelsChoiceBox" fx:id="levelsChoiceBox" >
-<!--                <margin>-->
-<!--                    <Insets bottom="20"/>-->
-<!--                </margin>-->
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Level 1"/>
-                        <String fx:value="Level 2"/>
-                        <String fx:value="Level 3"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
-            <Button fx:id="startButton" id="startButton" text = "Start" onAction="#onButtonClick" stylesheets="@../css/style.css"/>
-            <Label fx:id="statusText" id="statusText" text="Moves: 0"/>
-        </HBox>
-    </bottom>
-</BorderPane>
+        </center>
+        <bottom>
+            <HBox alignment="CENTER" spacing="40" >
+                <!--            <padding>-->
+                <!--                <Insets left="70"/>-->
+                <!--            </padding>-->
+                <ComboBox id="levelsChoiceBox" fx:id="levelsChoiceBox" >
+                    <!--                <margin>-->
+                    <!--                    <Insets bottom="20"/>-->
+                    <!--                </margin>-->
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Level 1"/>
+                            <String fx:value="Level 2"/>
+                            <String fx:value="Level 3"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Button fx:id="startButton" id="startButton" text = "Start" onAction="#onButtonClick" stylesheets="@../css/style.css"/>
+                <Label fx:id="statusText" id="statusText" text="Moves: 0"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+
+</StackPane>

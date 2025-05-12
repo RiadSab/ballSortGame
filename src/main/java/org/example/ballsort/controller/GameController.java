@@ -4,8 +4,10 @@ import javafx.animation.ScaleTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -15,27 +17,51 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Transform;
+import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.example.ballsort.model.Ball;
-import org.example.ballsort.model.GameState;
-import org.example.ballsort.model.Move;
-import org.example.ballsort.model.Tube;
+import org.example.ballsort.Database.DAO;
+import org.example.ballsort.model.*;
 
 import javax.swing.text.html.Option;
+import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static java.lang.Math.abs;
 
 public class GameController {
     GameState gameState;
     String level;
+    GameSession gameSession;
+    User userLoggedIn;
+    Boolean clickedStartFirstTime = false;
+    Stage stage;
+
+    public User getUserLoggedIn() {
+        return userLoggedIn;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void setUserLoggedIn(User userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
 
     @FXML
     private Label statusText;
@@ -50,18 +76,23 @@ public class GameController {
     @FXML
     private Button redoButton;
     @FXML
+    private StackPane stackPane;
+    @FXML
+    private BorderPane borderPane;
+    @FXML
     public void initialize() {
         level = "Level 1";
-
         levelsChoiceBox.setOnAction(event -> {
             String levelSelected = levelsChoiceBox.getSelectionModel().getSelectedItem();
             level = levelSelected;
-            setGameUi(level);
+//            setGameUi(level);
         });
         hoverGrowTransition(startButton);
         hoverGrowTransition(undoButton);
         hoverGrowTransition(redoButton);
+//        gameSound();
     }
+
 
     public void hoverGrowTransition(Button button) {
         ScaleTransition grow = new ScaleTransition(Duration.millis(200), button);
@@ -80,11 +111,29 @@ public class GameController {
     }
 
     public void onButtonClick() {
+        closedWindowInstructions(); // set event handler when the user close the window we should insert the gameSession into DB
+        if(clickedStartFirstTime){
+            DAO.insertSession(gameSession);
+            clickedStartFirstTime = false;
+        }
+        LocalDateTime now = LocalDateTime.now();
         int levelNum = (level.charAt(level.length() - 1)) - '0';
         System.out.println("level: " + levelNum);
         String[] color = {"orange", "blue", "red", "green"};
+
+        //Create new GameSession and initilliaze it with 0 in score, endTime and false in won, so we can modify it later when the session ends.
+        gameSession  = new GameSession(userLoggedIn.getId(), now,now.getSecond(), now.getSecond(), false, levelNum, 0);
+//        DAO.insertSession(gameSession);
         gameState = new GameState(4, levelNum, color);
+        clickedStartFirstTime = true;
         setGameUi(level);
+    }
+
+    public void closedWindowInstructions(){
+        // set event handler when the user close the window we should insert the gameSession into DB
+        stage.setOnCloseRequest(event -> {
+           if(clickedStartFirstTime) DAO.insertSession(gameSession);
+        });
     }
 
     public void setGameUi(String level) {
@@ -160,6 +209,7 @@ public class GameController {
             event.consume();
         });
     }
+
     public void setupDragOver(VBox vbox, int index) {
         if(vbox == null) return;
         vbox.setOnDragOver(event -> {
@@ -170,8 +220,6 @@ public class GameController {
             event.consume();
         });
     }
-
-
 
     public void setupDragDropped(VBox vbox, int index) {
         if(vbox == null) {
@@ -189,23 +237,33 @@ public class GameController {
                 int destIndex = index;
                 boolean moved = gameState.moveBall(srcIndex, destIndex);
                 if(moved) {
-                    Move move = new Move(srcIndex, destIndex);
-                    gameState.getHistory().add(move);
+                    LocalDateTime now = LocalDateTime.now();
+                    int nowSeconds = now.getSecond();
+                    gameSession.setDuration(abs(nowSeconds - gameSession.getStartTime()));
+                    gameSession.setEndTime(nowSeconds);
+                    // score = moves / 2  +  duration / 2
+                    gameSession.setScore((gameState.getMoveCounter() / 2 ) + abs(gameSession.getDuration() / 2));
+//                    DAO.modifySession(gameSession);
+                    Move move = new Move(srcIndex, destIndex); // create the moves maked by the user
+                    gameState.getHistory().add(move);   // I added the move in the history's moves of the GameState
+//                    DAO.modifySession(gameSession);
                     System.out.println("Moved Ball");
-                    setGameUi(level);
+
+                    setGameUi(level); // setup UI du jeu
+
+                    if(gameState.isSolved()){  // instructions to do when the game is solved (won)
+                        gameSession.setWon(true);// set the session as won.
+//                        DAO.modifySession(gameSession);// insert the new state of the GameSession
+                        gameState.winAnimation(gameGrid,stackPane, borderPane);
+
+                        winSound();
+                    }
                 }
                 else System.out.println("not Moved ball");
                 event.setDropCompleted(true);
             }
             else event.setDropCompleted(false);
-            if(event.isDropCompleted()){
-                if(gameState.isSolved()){
-                    Label win = new Label("You won!!");
-                    win.setStyle("-fx-font-size: 18;");
-                    win.setAlignment(Pos.CENTER);
-//                    gameGrid.getChildren().getLast().add(win);
-                }
-            }
+
             event.consume();
         });
     }
@@ -214,6 +272,7 @@ public class GameController {
         circle.setOnDragDone(event -> {
             System.out.println("drag end");
             circle.setVisible(true);
+
         });
     }
 
@@ -223,7 +282,6 @@ public class GameController {
             gameState.getRedoMoves().addLast(lastMove);
             int srcIndex = gameState.getHistory().peekLast().getToIndex();
             int toIndex = gameState.getHistory().peekLast().getFromIndex();
-
             gameState.getTubes().get(toIndex).pushBall(gameState.getTubes().get(srcIndex).getBalls().pop());
             gameState.getHistory().removeLast();
             setGameUi(level);
@@ -238,4 +296,16 @@ public class GameController {
             setGameUi(level);
         }
     }
+
+    public void winSound(){
+        Media sound = new Media(getClass().getResource("/sounds/winningSound.wav").toExternalForm());
+        MediaPlayer mp = new MediaPlayer(sound);
+        mp.setCycleCount(MediaPlayer.INDEFINITE);
+        mp.play();
+    }
+//    public void gameSound(){
+//        Media sound = new Media(getClass().getResource("/sounds/gameSound.wav").toString());
+//        MediaPlayer mp = new MediaPlayer(sound);
+//        mp.play();
+//    }
 }

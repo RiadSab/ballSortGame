@@ -9,14 +9,14 @@ public class User {
     private String name;
     private String password;
     private String email;
-    private List<gameSession> sessions;
+    private List<GameSession> sessions;
 
     public User(String name, String password, String email) {
         this.id = incre++;
         this.name = name;
         this.password = password;
         this.email = email;
-        this.sessions = new ArrayList<gameSession>();
+        this.sessions = new ArrayList<GameSession>();
     }
 
     public User(int id, String name, String email, String password) {
@@ -58,11 +58,11 @@ public class User {
         this.email = email;
     }
 
-    public List<gameSession> getSessions() {
+    public List<GameSession> getSessions() {
         return sessions;
     }
 
-    public void setSessions(List<gameSession> sessions) {
+    public void setSessions(List<GameSession> sessions) {
         this.sessions = sessions;
     }
 }

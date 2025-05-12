@@ -14,6 +14,7 @@ module org.example.ballsort {
     requires java.sql;
     requires jbcrypt;
     requires jdk.compiler;
+    requires javafx.media;
 
 
     opens org.example.ballsort to javafx.fxml;
