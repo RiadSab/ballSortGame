@@ -33,9 +33,9 @@ public class GameState {
     private int moveCounter = 0;
 
 
-   public GameState(int maxBalls, int mTubes, String [] colors) {
-
-
+   public GameState(int maxBalls, int nbTubesBasedOnLevel, String [] colors) {
+       //quand la classe est instanciasé, nbTubesBasedOnLevel represente le niveau (level)
+       // et apres on traite cet attribut pour creer les tubes vides correspendants
        redoMoves = new ArrayDeque<>();
        tubes = new ArrayList<>();
        history = new ArrayDeque<>();
@@ -49,8 +49,8 @@ public class GameState {
            tubes.add(tube);
        }
        int emptyTubes = 0;
-       if(mTubes == 1) emptyTubes = 2;
-       else if(mTubes == 2) emptyTubes = 1;
+       if(nbTubesBasedOnLevel == 1) emptyTubes = 2;
+       else if(nbTubesBasedOnLevel == 2) emptyTubes = 1;
 
        for(int i = 0; i < emptyTubes; i++) {
            Tube tube = new Tube();
@@ -87,10 +87,17 @@ public class GameState {
 
     public boolean isSolved(){
         for(Tube tube : tubes){
+            // si le tube est vide, on ne peut pas connaitre si le jeu est gagné ou non
             if(tube.isEmpty()) continue;
+            // si le tube n'est pas vide et contient mois de 5 boules alors le jeu nèst pas encore gagné
             if((tube.getBalls().size() < 5) ) return false;
+            // si les tubes pleins ont des boules des couleurs differents, le jeu n'est pas encore gagné
             if(!tube.isUniColor()) return false;
         }
+
+        // et enfine si les tubes pleins, remplient par des boules de couleur identique, le jeu est gagné
+        // et retourn true
+
         return true;
     }
 
