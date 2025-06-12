@@ -1,9 +1,12 @@
 package org.example.ballsort.Database;
 import org.example.ballsort.model.GameSession;
+import org.example.ballsort.model.Score;
 import org.mindrot.jbcrypt.BCrypt;
 import org.example.ballsort.model.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mindrot.jbcrypt.BCrypt.checkpw;
 
@@ -29,8 +32,8 @@ public class DAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
+
     public static void insertUser(User user) {
         //the query doesn't contain the idUser because it's auto increment and the primary key too.
         String query = "INSERT INTO users (name, email, hashed_password) VALUES (?, ?, ?)";
@@ -67,6 +70,26 @@ public class DAO {
         return null;
     }
 
+    public static User selectUser(int id) {
+        String query = "SELECT * FROM users WHERE id = ?";
+
+        try {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String hashedPassword = rs.getString("hashed_password");
+                return new User(id, name, email, hashedPassword);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
 
 
     public static boolean checkLogin(String name, String password) {
@@ -86,6 +109,34 @@ public class DAO {
     public static boolean userExists(String name) {
         if(selectUser(name) == null) return false;
         return true;
+    }
+
+    public static List<Score> getListScores(int levelSearched) throws SQLException {
+        String query = "SELECT * FROM sessions ORDER BY score DESC LIMIT 10";
+        List<Score> scores = new ArrayList<>();
+
+        try (PreparedStatement ps = con.prepareStatement(query)
+        ){
+            int rank = 1;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int idSession = rs.getInt("idSession");
+                int idUser = rs.getInt("idUser");
+                int level = rs.getInt("level");
+                int won = rs.getInt("won");
+                int score = rs.getInt("score");
+                User user = selectUser(idUser);
+                System.out.println("user: " + user.getName());
+                if(user != null && level == levelSearched) {
+                    Score s = new Score(score, user,rank++);
+                    scores.add(s);
+                }
+            }
+            return scores;
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void modifySession(GameSession session) {

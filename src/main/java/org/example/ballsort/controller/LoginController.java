@@ -69,7 +69,7 @@ public class LoginController {
             gameController1.setUserLoggedIn(userLoggedIn);
             stage = MainApp.window;
             gameController1.setStage(stage);
-            Scene scene = new Scene(root, 700, 400);
+            Scene scene = new Scene(root, 800, 500);
             scene.getStylesheets().add(MainApp.class.getResource("/css/style.css").toExternalForm());
             MainApp.window.setTitle("Ball Sort Game!");
             MainApp.window.setScene(scene);
@@ -100,6 +100,8 @@ public class LoginController {
             shrink.play();
         });
     }
+
+
 
     public User getUserLoggedIn() {
         return userLoggedIn;

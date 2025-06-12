@@ -40,10 +40,11 @@ public class GameState {
        tubes = new ArrayList<>();
        history = new ArrayDeque<>();
        for(int i = 0; i < 5; i++) {
-           int randomIndex = (int) (Math.random() );
+           int randomIndex = new Random().nextInt(colors.length);
+           System.out.println("random  " + randomIndex);
            Tube tube = new Tube();
            for(int j = 0; j < colors.length; j++) {
-               Ball ball = new Ball(colors[(randomIndex + i + j) % colors.length]);
+               Ball ball = new Ball(colors[(randomIndex + j ) % colors.length]);
                tube.pushBall(ball);
            }
            tubes.add(tube);
@@ -65,7 +66,7 @@ public class GameState {
 
             return false;
         }
-        else if(fromTube != null && toTube != null && fromTube != toTube) {
+        else if(fromTube != null && toTube != null && fromTube != toTube && toTube.getBalls().size() < 6) {
             if(toTube.isEmpty()) {
                 moveCounter++;
                 toTube.pushBall(fromTube.popBall());

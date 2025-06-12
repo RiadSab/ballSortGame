@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.ballsort.controller.ScoresController"
+            stylesheets="@../css/style.css"
+            prefHeight="400.0" prefWidth="600.0"
+            fx:id="borderScore"
+            id="borderScore"
+>
+    <top>
+        <ComboBox id="levelsChoiceBox" fx:id="levelsChoiceBox" value="Level 1">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Level 1"/>
+                    <String fx:value="Level 2"/>
+                    <String fx:value="Level 3"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </top>
+    <center>
+        <GridPane alignment="CENTER" fx:id="gridPane" id="gridPane" hgap="10" vgap="10">
+            <TableView fx:id="scoreTable" id="scoreTable" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <columns>
+                    <TableColumn fx:id="rankColumn" id="rank" text="Rank" prefWidth="70"/>
+                    <TableColumn fx:id="userColumn" id="userColumn" text="User" prefWidth="200"/>
+                    <TableColumn fx:id="scoreColumn" id="scoreColumn" text="Score" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </GridPane>
+
+    </center>
+
+
+</BorderPane>

@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -17,10 +18,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -31,6 +29,7 @@ import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.ballsort.Database.DAO;
+import org.example.ballsort.MainApp;
 import org.example.ballsort.model.*;
 
 import javax.swing.text.html.Option;
@@ -45,7 +44,7 @@ import static java.lang.Math.abs;
 
 public class GameController {
     GameState gameState;
-    String level;
+    int level;
     GameSession gameSession;
     User userLoggedIn;
     Boolean clickedStartFirstTime = false;
@@ -64,6 +63,8 @@ public class GameController {
     }
 
     @FXML
+    private Button scoresButton;
+    @FXML
     private Label statusText;
     @FXML
     private Button startButton;
@@ -80,17 +81,30 @@ public class GameController {
     @FXML
     private BorderPane borderPane;
     @FXML
+    private boolean scoreTableOpenned = false;
+
+
+    @FXML
     public void initialize() {
-        level = "Level 1";
+        level = 1;
         levelsChoiceBox.setOnAction(event -> {
             String levelSelected = levelsChoiceBox.getSelectionModel().getSelectedItem();
-            level = levelSelected;
+            if(levelSelected.equals("Level 1")){
+                level = 1;
+            }
+            else if(levelSelected.equals("Level 2")){
+                level = 2;
+            }
+            else {
+                level = 3;
+            }
 //            setGameUi(level);
         });
         hoverGrowTransition(startButton);
         hoverGrowTransition(undoButton);
         hoverGrowTransition(redoButton);
-//        gameSound();
+        hoverGrowTransition(scoresButton);
+        //gameSound();
     }
 
 
@@ -117,14 +131,12 @@ public class GameController {
             clickedStartFirstTime = false;
         }
         LocalDateTime now = LocalDateTime.now();
-        int levelNum = (level.charAt(level.length() - 1)) - '0';
-        System.out.println("level: " + levelNum);
+        System.out.println("level: " + level);
         String[] color = {"orange", "blue", "red", "green"};
 
-        //Create new GameSession and initilliaze it with 0 in score, endTime and false in won, so we can modify it later when the session ends.
-        gameSession  = new GameSession(userLoggedIn.getId(), now,now.getSecond(), now.getSecond(), false, levelNum, 0);
-//        DAO.insertSession(gameSession);
-        gameState = new GameState(4, levelNum, color);
+
+        gameSession  = new GameSession(userLoggedIn.getId(), now,now.getSecond(), now.getSecond(), false, level, 0);
+        gameState = new GameState(4, level, color);
         clickedStartFirstTime = true;
         setGameUi(level);
     }
@@ -136,7 +148,7 @@ public class GameController {
         });
     }
 
-    public void setGameUi(String level) {
+    public void setGameUi(int level) {
 //        int levelNum = (level.charAt(level.length() - 1)) - '0';
 //        String[] color = {"orange", "blue", "red", "green"};
 //        gameState = new GameState(4, levelNum, color);
@@ -158,9 +170,12 @@ public class GameController {
             vbox.setAlignment(Pos.BOTTOM_CENTER);
             vbox.setSpacing(10);
             vbox.setPrefHeight(250);
-            vbox.setPrefWidth(50);
+            vbox.setPrefWidth(55);
 
-            for(int j = tube.getBalls().size() - 1; j >= 0; j--){
+
+            List<Circle> circles = new ArrayList<>();
+            int ballCount = tube.getBalls().size();
+            for(int j = ballCount - 1; j >= 0; j--){
                 Ball ball = tube.getBalls().get(j);
                 Circle circle = new Circle(15);
                 circle.setId("circle");
@@ -175,6 +190,7 @@ public class GameController {
                 }
                 vbox.getChildren().add(circle);
             }
+
 
             setupDragOver(vbox, index);
             setupDragDropped(vbox, index);
@@ -302,10 +318,26 @@ public class GameController {
         MediaPlayer mp = new MediaPlayer(sound);
         mp.setCycleCount(MediaPlayer.INDEFINITE);
         mp.play();
+
     }
+
+    public void showBestScores() throws IOException {
+        if(!scoreTableOpenned){
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/scores_view.fxml"));
+            Parent root = loader.load();
+            ScoresController scoresController = loader.getController();
+            Stage stage = new Stage();
+            Scene scene = new Scene(root, 800, 500);
+            stage.setTitle("Best Scores");
+            stage.setScene(scene);
+            stage.show();
+        }
+    }
+
 //    public void gameSound(){
 //        Media sound = new Media(getClass().getResource("/sounds/gameSound.wav").toString());
 //        MediaPlayer mp = new MediaPlayer(sound);
 //        mp.play();
 //    }
 }
+

@@ -1,8 +1,5 @@
 package org.example.ballsort.model;
-
-import java.sql.Date;
 import java.time.LocalDateTime;
-
 import static java.lang.Math.abs;
 
 public class GameSession {
