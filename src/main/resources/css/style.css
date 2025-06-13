@@ -104,7 +104,7 @@
     -fx-background-size: stretch;
 }
 
-#undoButton, #redoButton, #scoresButton{
+#undoButton, #redoButton, #scoresButton, #toLogin{
     -fx-text-fill: white;
     -fx-background-color: rgba(0, 188, 255, 0.5);
     -fx-pref-height: 30px;
@@ -117,7 +117,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 111, 255, 0.5),  20, 0.5, 4, 4);
 }
 
-#scoresButton{
+#scoresButton, #toLogin, #toGame{
     -fx-text-fill: white;
     -fx-background-color: rgba(0, 188, 255, 0.5);
     -fx-pref-height: 30px;

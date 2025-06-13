@@ -17,6 +17,7 @@ public class DAO {
     public static void insertSession(GameSession session) {
         //the query doesn't contain the idSession because it's auto increment and also the primary key,
         //it's easy like this to maintain its unicity.
+        // alors le DATABASE prend en charge du idSession (auto increment)
         String query = "INSERT INTO sessions ( idUser, level, won, score, playedAt, duration) VALUES (?,?,?,?,?,?) ";
         PreparedStatement ps = null;
         try {
@@ -34,6 +35,7 @@ public class DAO {
         }
     }
 
+    // ajoute les nouveaux comptes a la table Users du DATABASE
     public static void insertUser(User user) {
         //the query doesn't contain the idUser because it's auto increment and the primary key too.
         String query = "INSERT INTO users (name, email, hashed_password) VALUES (?, ?, ?)";
@@ -50,6 +52,7 @@ public class DAO {
         }
     }
 
+    // retoune object User depuis la table Users du DATABASE, D'apès userName
     public static User selectUser(String name) {
         String query = "SELECT * FROM users WHERE name = ?";
 
@@ -70,6 +73,7 @@ public class DAO {
         return null;
     }
 
+    // retoune object User depuis la table Users du DATABASE, D'apès l'ID
     public static User selectUser(int id) {
         String query = "SELECT * FROM users WHERE id = ?";
 
@@ -81,6 +85,7 @@ public class DAO {
                 String name = rs.getString("name");
                 String email = rs.getString("email");
                 String hashedPassword = rs.getString("hashed_password");
+
                 return new User(id, name, email, hashedPassword);
             }
 
@@ -94,6 +99,7 @@ public class DAO {
 
     public static boolean checkLogin(String name, String password) {
 
+        // on cherche dans la table du Database le User d'apès le userName
         User user = selectUser(name);
         // si la table users du Database ne contient pas un enregistrement correspendant au nom entré,
         // l'utilisateur sera null car la methode selectUser(name) a retourné null puisqu'elle n'a rien tourvé
@@ -106,11 +112,14 @@ public class DAO {
         return checkpw(password, hashedPassword);
     }
 
+    // utilisée pour savoir si l'userName entrée par du nouveau utilsateur
+    // est deja pris par un autre, afin de lui créer un compte avec un UserName unique
     public static boolean userExists(String name) {
         if(selectUser(name) == null) return false;
         return true;
     }
 
+    // methodes d'affichage des scores selon le niveau
     public static List<Score> getListScores(int levelSearched) throws SQLException {
         String query = "SELECT * FROM sessions ORDER BY score DESC LIMIT 10";
         List<Score> scores = new ArrayList<>();
@@ -127,7 +136,10 @@ public class DAO {
                 int score = rs.getInt("score");
                 User user = selectUser(idUser);
                 System.out.println("user: " + user.getName());
-                if(user != null && level == levelSearched) {
+
+                // on vérifie si cette session est gagné, et si elle le niveau cherché
+                if(user != null && level == levelSearched && won == 1) {
+                    System.out.println("score " + score);
                     Score s = new Score(score, user,rank++);
                     scores.add(s);
                 }
@@ -137,19 +149,5 @@ public class DAO {
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void modifySession(GameSession session) {
-        // this method delete the record from the table and insert again the correct one
-
-        String queryDelete = "DELETE FROM sessions ORDER BY idSession DESC limit 1";
-        try {
-            PreparedStatement ps = con.prepareStatement(queryDelete);
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        insertSession(session);
     }
 }

@@ -48,6 +48,7 @@
                         </FXCollections>
                     </items>
                 </ComboBox>
+                <Button fx:id="toLogin" id="toLogin" text="Log out" onAction="#toLogin" />
                 <Region fx:id="leftSpacer" HBox.hgrow="ALWAYS"/>
                 <Label fx:id="statusText" id="statusText" text="Moves: 0"/>
             </HBox>

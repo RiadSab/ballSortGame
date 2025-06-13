@@ -1,8 +1,6 @@
 package org.example.ballsort.controller;
-import com.almasb.fxgl.core.collection.Array;
 import javafx.animation.ScaleTransition;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -43,24 +41,12 @@ import java.util.List;
 import static java.lang.Math.abs;
 
 public class GameController {
-    GameState gameState;
-    int level;
-    GameSession gameSession;
-    User userLoggedIn;
-    Boolean clickedStartFirstTime = false;
-    Stage stage;
-
-    public User getUserLoggedIn() {
-        return userLoggedIn;
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUserLoggedIn(User userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
-    }
+    private GameState gameState;
+    private int level;
+    private GameSession gameSession;
+    private User userLoggedIn;
+    private Boolean clickedStartFirstTime = false;
+    private Stage stage;
 
     @FXML
     private Button scoresButton;
@@ -68,6 +54,8 @@ public class GameController {
     private Label statusText;
     @FXML
     private Button startButton;
+    @FXML
+    private Button toLogin;
     @FXML
     private GridPane gameGrid;
     @FXML
@@ -80,9 +68,15 @@ public class GameController {
     private StackPane stackPane;
     @FXML
     private BorderPane borderPane;
-    @FXML
-    private boolean scoreTableOpenned = false;
 
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void setUserLoggedIn(User userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
 
     @FXML
     public void initialize() {
@@ -98,16 +92,16 @@ public class GameController {
             else {
                 level = 3;
             }
-//            setGameUi(level);
         });
         hoverGrowTransition(startButton);
         hoverGrowTransition(undoButton);
         hoverGrowTransition(redoButton);
         hoverGrowTransition(scoresButton);
-        //gameSound();
+        hoverGrowTransition(toLogin);
     }
 
 
+    // ajoute l'effect de grandir lors du survole, pour les boutons
     public void hoverGrowTransition(Button button) {
         ScaleTransition grow = new ScaleTransition(Duration.millis(200), button);
         grow.setToX(1.2);
@@ -126,7 +120,7 @@ public class GameController {
 
     public void onButtonClick() {
         closedWindowInstructions(); // set event handler when the user close the window we should insert the gameSession into DB
-        if(clickedStartFirstTime){
+        if(clickedStartFirstTime && !gameState.isSolved()){
             DAO.insertSession(gameSession);
             clickedStartFirstTime = false;
         }
@@ -135,8 +129,12 @@ public class GameController {
         String[] color = {"orange", "blue", "red", "green"};
 
 
+        // intialiser le jeu et la session actuelle
         gameSession  = new GameSession(userLoggedIn.getId(), now,now.getSecond(), now.getSecond(), false, level, 0);
-        gameState = new GameState(4, level, color);
+        gameState = new GameState( level, color);
+
+        // user a clické le button Start (s'il clicke une deusieme fois,
+        // c'est-à-dire la session est termiée et on doit la inserer dans DB)
         clickedStartFirstTime = true;
         setGameUi(level);
     }
@@ -144,14 +142,14 @@ public class GameController {
     public void closedWindowInstructions(){
         // set event handler when the user close the window we should insert the gameSession into DB
         stage.setOnCloseRequest(event -> {
+            // Avant d'insere la session, il faut assurer qu'elle contient des informations,
+            // c'est-à-dire que l'utilsateur doit jouer avant d'inserer la session.
+            // Donc, il faut assurer qu'il a clické start pour une fois.
            if(clickedStartFirstTime) DAO.insertSession(gameSession);
         });
     }
 
     public void setGameUi(int level) {
-//        int levelNum = (level.charAt(level.length() - 1)) - '0';
-//        String[] color = {"orange", "blue", "red", "green"};
-//        gameState = new GameState(4, levelNum, color);
 
         if(gameGrid == null) {
             System.out.println("GameGrid is null");
@@ -163,6 +161,10 @@ public class GameController {
 
         if(gameState != null ) statusText.setText("Moves: " + String.valueOf(gameState.getMoveCounter()));
         int i = 0;
+
+        // On récupère les DATA  du gameState qu'on a deja créé
+        // on crée les Circles en se basant sur le couleur de l'objet Ball on a deja dans le gameState
+
         for(Tube tube: gameState.getTubes()){
             final int index = i;
             VBox vbox = new VBox(30);
@@ -173,7 +175,6 @@ public class GameController {
             vbox.setPrefWidth(55);
 
 
-            List<Circle> circles = new ArrayList<>();
             int ballCount = tube.getBalls().size();
             for(int j = ballCount - 1; j >= 0; j--){
                 Ball ball = tube.getBalls().get(j);
@@ -185,24 +186,28 @@ public class GameController {
                 circle.setStyle("-fx-background-radius: 50; -fx-border-radius: 50;");
 
                 if(j == tube.getBalls().size() - 1){
+                    // On fait le setup du Drag start et le Drag End pour la derniere Ball du tube
                     setUpDragStart(circle, index);
                     setupDragEnd(circle);
                 }
                 vbox.getChildren().add(circle);
             }
 
-
+            //On fait le setup drag Over et drag dropped pour toutes les balles.
             setupDragOver(vbox, index);
             setupDragDropped(vbox, index);
+
+            // on ajoute le tube crée dans le bord du jeu (GameGrid)
             gameGrid.add(vbox, i++, 0);
         }
     }
 
+    // permet de retouner le dernier Circle  du VBox
     public Circle lastElementOfVbox(VBox vbox) {
         if(vbox == null) return null;
         ObservableList<Node> children = vbox.getChildren();
         if(children.isEmpty()) return null;
-        return (Circle) children.getLast();
+        return (Circle) children.get(children.size() - 1);
     }
 
     public void setUpDragStart(Circle circle, int index) {
@@ -242,40 +247,41 @@ public class GameController {
             System.out.println("vbox is null");
             return;
         }
-        System.out.println("drag end enter fuunc");
         vbox.setOnDragDropped(event -> {
             if(lastElementOfVbox(vbox) != null) lastElementOfVbox(vbox).setVisible(true);
             else System.out.println("lastElemet is null");
-            System.out.println("Drag dropped");
             Dragboard db = event.getDragboard();
             if (db.hasString()) {
+                // recuperer l'index du tube de depart d'après le Dragboard
                 int srcIndex = Integer.parseInt(db.getString());
                 int destIndex = index;
+
+                // verifier si la balle peut etre deplacée (si elle respecte les règles)
                 boolean moved = gameState.moveBall(srcIndex, destIndex);
                 if(moved) {
                     LocalDateTime now = LocalDateTime.now();
                     int nowSeconds = now.getSecond();
                     gameSession.setDuration(abs(nowSeconds - gameSession.getStartTime()));
                     gameSession.setEndTime(nowSeconds);
-                    // score = moves / 2  +  duration / 2
-                    gameSession.setScore((gameState.getMoveCounter() / 2 ) + abs(gameSession.getDuration() / 2));
-//                    DAO.modifySession(gameSession);
+                    gameSession.setScore(500 - (gameState.getMoveCounter() / 2 ) + abs(gameSession.getDuration() / 2));
                     Move move = new Move(srcIndex, destIndex); // create the moves maked by the user
                     gameState.getHistory().add(move);   // I added the move in the history's moves of the GameState
-//                    DAO.modifySession(gameSession);
+
                     System.out.println("Moved Ball");
 
+                    // après le mouvement du balle :
+                    // on refait le setup de l'interface graphique selon la nouvelle etat des balles
                     setGameUi(level); // setup UI du jeu
 
-                    if(gameState.isSolved()){  // instructions to do when the game is solved (won)
+                    if(gameState.isSolved()){// instructions to do when the game is solved (won)
                         gameSession.setWon(true);// set the session as won.
-//                        DAO.modifySession(gameSession);// insert the new state of the GameSession
                         gameState.winAnimation(gameGrid,stackPane, borderPane);
 
+                        // un son de victoire
                         winSound();
                     }
                 }
-                else System.out.println("not Moved ball");
+                else System.out.println("ball didn't move");
                 event.setDropCompleted(true);
             }
             else event.setDropCompleted(false);
@@ -313,6 +319,7 @@ public class GameController {
         }
     }
 
+    // son de victoire
     public void winSound(){
         Media sound = new Media(getClass().getResource("/sounds/winningSound.wav").toExternalForm());
         MediaPlayer mp = new MediaPlayer(sound);
@@ -321,23 +328,22 @@ public class GameController {
 
     }
 
+    // methode pour nous rendre dans une autre fenetre de scores
     public void showBestScores() throws IOException {
-        if(!scoreTableOpenned){
-            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/scores_view.fxml"));
-            Parent root = loader.load();
-            ScoresController scoresController = loader.getController();
-            Stage stage = new Stage();
-            Scene scene = new Scene(root, 800, 500);
-            stage.setTitle("Best Scores");
-            stage.setScene(scene);
-            stage.show();
-        }
+                FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/scores_view.fxml"));
+                Parent root = loader.load();
+                Stage stage = new Stage();
+                Scene scene = new Scene(root, 800, 500);
+                stage.setTitle("Best Scores");
+                stage.setScene(scene);
+                stage.show();
     }
 
-//    public void gameSound(){
-//        Media sound = new Media(getClass().getResource("/sounds/gameSound.wav").toString());
-//        MediaPlayer mp = new MediaPlayer(sound);
-//        mp.play();
-//    }
+    // methode pour retourner a la page du log in
+    public void toLogin() throws IOException {
+        MainApp.changeScene("/fxml/login_view.fxml");
+    }
+
+
 }
 

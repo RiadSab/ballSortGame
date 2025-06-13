@@ -14,11 +14,8 @@ import javafx.util.Duration;
 import org.example.ballsort.MainApp;
 import org.example.ballsort.Database.DAO;
 import org.example.ballsort.model.User;
-
-import java.awt.*;
 import java.io.IOException;
 
-import static org.example.ballsort.MainApp.window;
 
 public class LoginController {
 
@@ -47,21 +44,29 @@ public class LoginController {
 
     public  void loginAction() throws IOException {
 
+        // on récupère les informations entrées par l'utilsateur pour confirmer le login
         String user =  userName.getText();
         String pass = userPassword.getText();
+
+
         System.out.println(user);
         System.out.println(pass);
-        if(user == null || pass == null){
-            System.out.println("Username or Password are empty");
-        }
 
+
+        // dans le cas où le mot de passe ou l'userName est vide
+        // aussi dans le cos où le mot de passe est incorrecte
         if(user.isEmpty() || pass.isEmpty() || !DAO.checkLogin(user, pass)){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Username or Password");
             alert.setContentText("Invalid Username or Password");
             alert.showAndWait();
         }
+
+        // le login est validé.
         else {
+
+            // on se rend vers le jeu
+            // on change la scene
             userLoggedIn = DAO.selectUser(user);
             FXMLLoader fxmlLoader1 = new FXMLLoader(MainApp.class.getResource("/fxml/game_view.fxml"));
             Parent root = fxmlLoader1.load();
@@ -74,7 +79,6 @@ public class LoginController {
             MainApp.window.setTitle("Ball Sort Game!");
             MainApp.window.setScene(scene);
             MainApp.window.show();
-//            MainApp.changeScene("/fxml/game_view.fxml");
         }
     }
 
@@ -83,8 +87,7 @@ public class LoginController {
     }
 
 
-
-
+    // methode pour ajouter des effets visuel sur la taille des bouttons lors du survole
     public void hoverGrowTransition(Button button) {
         ScaleTransition grow = new ScaleTransition(Duration.millis(200), button);
         grow.setToX(1.2);
@@ -103,51 +106,4 @@ public class LoginController {
 
 
 
-    public User getUserLoggedIn() {
-        return userLoggedIn;
-    }
-
-    public void setUserLoggedIn(User userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
-    }
-
-    public TextField getUserName() {
-        return userName;
-    }
-
-    public void setUserName(TextField userName) {
-        this.userName = userName;
-    }
-
-    public PasswordField getUserPassword() {
-        return userPassword;
-    }
-
-    public void setUserPassword(PasswordField userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    public Button getLoginButton() {
-        return loginButton;
-    }
-
-    public void setLoginButton(Button loginButton) {
-        this.loginButton = loginButton;
-    }
-
-    public Button getToSignUp() {
-        return toSignUp;
-    }
-
-    public void setToSignUp(Button toSignUp) {
-        this.toSignUp = toSignUp;
-    }
-
-    public GridPane getGridPane() {
-        return gridPane;
-    }
-
-    public void setGridPane(GridPane gridPane) {
-        this.gridPane = gridPane;
-    }
 }

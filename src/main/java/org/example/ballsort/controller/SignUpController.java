@@ -28,18 +28,27 @@ public class SignUpController {
     @FXML
     private TextField userEmail;
     @FXML
-    private GridPane gridPane;
-    @FXML
     private Button signButton;
     @FXML
     private Button loginButton;
+    @FXML
+    private void initialize() {
+        // ajoute l'effect de grandir lors du survole, pour les boutons
+        hoverGrowTransition(loginButton);
+        hoverGrowTransition(signButton);
+    }
 
 
+    // retoune a la page du login
     public void toLogin () throws IOException {
         MainApp.changeScene("/fxml/login_view.fxml");
     }
 
+    // s'active lors du click dans le bouton sign in
+    // verifie les informations entrées pour créer un compte
     public void signInAction() throws IOException {
+
+        // verifie si le userName ou le mot de passe ou l'email sont vide.
         if(userName.getText().length() == 0 ||  userEmail.getText().length() == 0 || userPassword.getText().length() == 0 ) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -47,6 +56,8 @@ public class SignUpController {
             alert.setContentText("Please enter all the fields");
             alert.showAndWait();
         }
+
+        // verifie si l'userName est deja reservé
         else if(userExists(userName.getText())) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -55,6 +66,8 @@ public class SignUpController {
             alert.showAndWait();
         }
         else {
+
+            // la creation du compte est reussie.
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
             alert.setHeaderText(null);
@@ -66,13 +79,9 @@ public class SignUpController {
         }
     }
 
-    @FXML
-    private void initialize() {
-        hoverGrowTransition(loginButton);
-        hoverGrowTransition(signButton);
-    }
 
 
+    // ajoute l'effect de grandir lors du survole, pour les boutons
     public void hoverGrowTransition(Button button) {
         ScaleTransition grow = new ScaleTransition(Duration.millis(200), button);
         grow.setToX(1.2);

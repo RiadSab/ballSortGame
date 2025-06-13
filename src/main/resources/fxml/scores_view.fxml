@@ -23,6 +23,7 @@
                 </FXCollections>
             </items>
         </ComboBox>
+<!--        <Button fx:id="toGame" id="toGame" text="Back to game" onAction="#toGame"/>-->
     </top>
     <center>
         <GridPane alignment="CENTER" fx:id="gridPane" id="gridPane" hgap="10" vgap="10">

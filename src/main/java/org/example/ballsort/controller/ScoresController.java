@@ -19,24 +19,30 @@ public class ScoresController {
     @FXML private TableColumn<Score, Integer> rankColumn;
     @FXML private TableColumn<Score, Integer> scoreColumn;
     @FXML private TableColumn<Score, String> userColumn;
-    private boolean scoreTableOpenned = false;
+
 
     public void loadScores(int level) throws SQLException {
+        // créer des Cells pour les données, adapté à la structure de la classe Score
+        rankColumn.setCellValueFactory(data ->data.getValue().rankProperty().asObject());
+        scoreColumn.setCellValueFactory(data -> data.getValue().valueProperty().asObject());
+        userColumn.setCellValueFactory(data -> data.getValue().userProperty());
 
-            scoreTableOpenned = true;
-            rankColumn.setCellValueFactory(data ->data.getValue().rankProperty().asObject());
-            scoreColumn.setCellValueFactory(data -> data.getValue().valueProperty().asObject());
-            userColumn.setCellValueFactory(data -> data.getValue().userProperty());
-
-            List<Score> scores = DAO.getListScores(level);
-            ObservableList<Score> observableScores = FXCollections.observableArrayList(scores);
-            scoreTable.setItems(observableScores);
-
+        // on récupère la liste des scores
+        List<Score> scores = DAO.getListScores(level);
+        ObservableList<Score> observableScores = FXCollections.observableArrayList(scores);
+        scoreTable.setItems(observableScores);
     }
 
 
     @FXML
     public void initialize() {
+
+        // on affiche les scores du niveau 1 par defaut.
+        try {
+            loadScores(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         levelsChoiceBox.setOnAction(event -> {
             String levelSelected = levelsChoiceBox.getSelectionModel().getSelectedItem();
             if(levelSelected.equals("Level 1")){
@@ -62,5 +68,6 @@ public class ScoresController {
             }
         });
     }
+
 
 }

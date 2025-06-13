@@ -2,7 +2,6 @@ package org.example.ballsort.model;
 
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -11,13 +10,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
-import javafx.scene.media.AudioTrack;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import org.example.ballsort.controller.GameController;
 
 
 import java.util.*;
@@ -28,42 +23,50 @@ public class GameState {
     private List<Tube> tubes;
     private Deque<Move> history;
     private Deque<Move> redoMoves;
-    private final int maxBalls = 6;
-    private final int maxTubes = 4;
     private int moveCounter = 0;
 
 
-   public GameState(int maxBalls, int nbTubesBasedOnLevel, String [] colors) {
-       //quand la classe est instanciasé, nbTubesBasedOnLevel represente le niveau (level)
+   public GameState(int nbTubesBasedOnLevel, String [] colors) {
+       //quand la classe est instanciée, nbTubesBasedOnLevel represente le niveau (level)
        // et apres on traite cet attribut pour creer les tubes vides correspendants
        redoMoves = new ArrayDeque<>();
        tubes = new ArrayList<>();
        history = new ArrayDeque<>();
        for(int i = 0; i < 5; i++) {
-           int randomIndex = new Random().nextInt(colors.length);
-           System.out.println("random  " + randomIndex);
            Tube tube = new Tube();
+
+           // le nombre de balles est le meme nombre de couleurs
+           // l'ordre des balles se fait selon une variable random
+           // pour que chaque sessoin eu un ordre special des couleurs
+           int randomIndex = new Random().nextInt(colors.length);
            for(int j = 0; j < colors.length; j++) {
                Ball ball = new Ball(colors[(randomIndex + j ) % colors.length]);
                tube.pushBall(ball);
            }
            tubes.add(tube);
        }
+
+       // on définit le niveau du jeu d'après le nombre de tubes vide
+       // 2 tubes vides pour niveau 1,
+       // 1 tube vide pour niveau 2,
+       // 0 tube vide pour niveau 3.
        int emptyTubes = 0;
        if(nbTubesBasedOnLevel == 1) emptyTubes = 2;
        else if(nbTubesBasedOnLevel == 2) emptyTubes = 1;
 
+       // ou crée les tubes vides selon le niveau
        for(int i = 0; i < emptyTubes; i++) {
            Tube tube = new Tube();
            tubes.add(tube);
        }
    }
 
+   // methode qui prend en charge le mouvement et son validation
     public boolean moveBall(int from, int to) {
         Tube fromTube = this.getTubes().get(from);
         Tube toTube = this.getTubes().get(to);
-        if(isSolved()){
 
+        if(isSolved()){
             return false;
         }
         else if(fromTube != null && toTube != null && fromTube != toTube && toTube.getBalls().size() < 6) {
@@ -81,7 +84,6 @@ public class GameState {
             }
         }
         return false;
-
    }
 
 
@@ -102,37 +104,13 @@ public class GameState {
         return true;
     }
 
-    public void recodMove(Move move){
-        history.push(move);
-    }
-
-    public void reset(){
-        history.clear();
-        tubes.clear();
-    }
-
-    public int getMaxBalls(){
-        return maxBalls;
-    }
-    public int getMaxTubes(){
-        return maxTubes;
-    }
-
 
     public List<Tube> getTubes() {
         return tubes;
     }
 
-    public void setTubes(List<Tube> tubes) {
-        this.tubes = tubes;
-    }
-
     public Deque<Move> getHistory() {
         return history;
-    }
-
-    public void setHistory(Deque<Move> history) {
-        this.history = history;
     }
 
     public int getMoveCounter() {
@@ -144,14 +122,12 @@ public class GameState {
         return redoMoves;
     }
 
-    public void setRedoMoves(Deque<Move> redoMoves) {
-        this.redoMoves = redoMoves;
-    }
-
-
 
     public void winAnimation(GridPane gridPane, StackPane stackPane, BorderPane borderPane){
 
+       // quand la session est gagnée, on fait des animations,
+        // les balles se grandissent, et inversement.
+        // et il y a aussi du Drop shadow
        for(Node vb : gridPane.getChildren()){
            if(vb instanceof VBox){
                for(Node circle : ((VBox) vb).getChildren()){
@@ -174,9 +150,13 @@ public class GameState {
                }
            }
        }
+
+       // on fait l'appel a la methode qui fait une animation pour le text (YOU WON!)
        winTextAnimation(gridPane, stackPane, borderPane);
     }
 
+
+    //fait une animation pour le text (YOU WON!)
     public void winTextAnimation(GridPane pane, StackPane stackPane, BorderPane borderPane){
        GaussianBlur blur = new GaussianBlur(15);
        borderPane.setEffect(blur);
@@ -195,22 +175,14 @@ public class GameState {
        stackPane.setAlignment(label, CENTER);
        borderPane.setDisable(true);
 
+
+       // si on clicke sur n'import chose, les effets sont desactivés,
+        // pour qu'on puisse faire des autres actions, comme jouer une autre partie...
         stackPane.setOnMouseClicked(mouseEvent -> {
             borderPane.setDisable(false);
             borderPane.setEffect(null);
             label.setVisible(false);
-
         });
     }
 
-//    public void winSound(){
-//       Media sound = new Media(GameController.class.getResource("/sounds/winningSound.wav").toExternalForm());
-//       MediaPlayer mp = new MediaPlayer(sound);
-//       mp.play();
-//    }
-//    public void gameSound(){
-//       Media sound = new Media(GameController.class.getResource("/sounds/gameSound1.wav").toExternalForm());
-//       MediaPlayer mp = new MediaPlayer(sound);
-//       mp.play();
-//    }
 }

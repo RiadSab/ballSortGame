@@ -2,6 +2,8 @@ package org.example.ballsort.model;
 
 import javafx.beans.property.*;
 
+
+// en general, cette classe est utilisée pour afficher le tableau du score.
 public class Score {
     private int rank;
     private int value;
@@ -13,21 +15,11 @@ public class Score {
         this.rank = rank;
     }
 
-    public int getRank() {
-        return rank;
-    }
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
+
     public IntegerProperty rankProperty() {
         return new SimpleIntegerProperty(rank);
     }
-    public int getValue() {
-        return value;
-    }
-    public void setValue(int value) {
-        this.value = value;
-    }
+
     public IntegerProperty valueProperty() {
         return new SimpleIntegerProperty(value);
     }

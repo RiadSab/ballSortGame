@@ -14,9 +14,6 @@ public class Tube {
         return balls;
     }
 
-    public void setBalls(Stack<Ball> balls) {
-        this.balls = balls;
-    }
 
     public boolean pushBall(Ball ball) {
         if(ball != null) {
