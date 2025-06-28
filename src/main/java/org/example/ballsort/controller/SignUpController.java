@@ -1,6 +1,5 @@
 package org.example.ballsort.controller;
 
-import com.sun.tools.javac.Main;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,7 +13,6 @@ import org.example.ballsort.Database.DAO;
 import org.example.ballsort.MainApp;
 import org.example.ballsort.model.User;
 import javafx.scene.control.Alert;
-import java.awt.*;
 import java.io.IOException;
 
 import static org.example.ballsort.Database.DAO.insertUser;

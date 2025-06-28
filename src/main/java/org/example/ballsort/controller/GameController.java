@@ -21,7 +21,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
@@ -30,13 +29,8 @@ import org.example.ballsort.Database.DAO;
 import org.example.ballsort.MainApp;
 import org.example.ballsort.model.*;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -81,7 +75,7 @@ public class GameController {
     @FXML
     public void initialize() {
         level = 1;
-        levelsChoiceBox.setOnAction(event -> {
+        levelsChoiceBox.setOnAction(_event -> {
             String levelSelected = levelsChoiceBox.getSelectionModel().getSelectedItem();
             if(levelSelected.equals("Level 1")){
                 level = 1;
@@ -110,10 +104,10 @@ public class GameController {
         ScaleTransition shrink = new ScaleTransition(Duration.millis(200), button);
         shrink.setToX(1);
         shrink.setToY(1);
-        button.setOnMouseEntered(event -> {
+        button.setOnMouseEntered(_event -> {
             grow.play();
         });
-        button.setOnMouseExited(event -> {
+        button.setOnMouseExited(_event -> {
             shrink.play();
         });
     }
@@ -131,7 +125,7 @@ public class GameController {
 
         // intialiser le jeu et la session actuelle
         gameSession  = new GameSession(userLoggedIn.getId(), now,now.getSecond(), now.getSecond(), false, level, 0);
-        gameState = new GameState( level, color);
+        gameState = new GameState(level, color);
 
         // user a clické le button Start (s'il clicke une deusieme fois,
         // c'est-à-dire la session est termiée et on doit la inserer dans DB)
@@ -141,7 +135,7 @@ public class GameController {
 
     public void closedWindowInstructions(){
         // set event handler when the user close the window we should insert the gameSession into DB
-        stage.setOnCloseRequest(event -> {
+        stage.setOnCloseRequest(_event -> {
             // Avant d'insere la session, il faut assurer qu'elle contient des informations,
             // c'est-à-dire que l'utilsateur doit jouer avant d'inserer la session.
             // Donc, il faut assurer qu'il a clické start pour une fois.
@@ -291,7 +285,7 @@ public class GameController {
     }
 
     public void setupDragEnd(Circle circle){
-        circle.setOnDragDone(event -> {
+        circle.setOnDragDone(_event -> {
             System.out.println("drag end");
             circle.setVisible(true);
 

@@ -12,9 +12,9 @@ module org.example.ballsort {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires java.sql;
-    requires jbcrypt;
     requires jdk.compiler;
     requires javafx.media;
+    requires jbcrypt;
 
 
     opens org.example.ballsort to javafx.fxml;
